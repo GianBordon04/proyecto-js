@@ -1,20 +1,7 @@
 function startGame() {
     console.log('Bienvenido al juego de fantasía.');
 
-    const playerName = prompt('¿Cuál es tu nombre? ');
-    const playerRace = prompt('¿Qué raza eliges? (humano,elfo,enano) ').toLowerCase();
-    const playerRol = prompt('¿Qué rol eliges? (guerrero,mago,arquero)')
-    console.log(`Hola, ${playerName}! El ${playerRace} Comencemos la aventura.`);
-
-
-    let playerHealth = 100;
-    let enemyHealth = 50;
-    let playerEvasion = 0;
-    let round = 1;
-    let damage = 0;
-
-
-    //   clases con items
+    // Roles
     const roles = [
         {
             id: 1,
@@ -45,7 +32,7 @@ function startGame() {
         }
     ]
     console.log(roles)
-    
+
 
     // Enemigos
     const enemies = [
@@ -94,91 +81,118 @@ function startGame() {
     ]
 
 
-    // bonus de roles
-    const chosenRol = roles.find((rol) => rol.name === playerRol )
-    console.log(chosenRol)
-    roles.forEach(function () {
-    if (playerRol.toLowerCase() === "guerrero"){
-        damage += chosenRol.rolDamage
-        playerHealth += chosenRol.rolHealth
-    } 
-
-    else if (playerRol.toLowerCase() === "mago"){
-        damage += chosenRol.rolDamage
-        playerHealth -= chosenRol.rolHealth
-    } 
-
-    else if (playerRol.toLowerCase() === "cazador"){
-        damage += chosenRol.rolDamage
-        playerEvasion += chosenRol.rolEvasion
-    } 
-
-    })
-
-     
-
-    //     if (playerRol.toLowerCase() === "guerrero" && rol.name.toLowerCase() === "guerrero") {
-    //         damage += rol.rolDamage
-    //         playerHealth += rol.rolHealth
-    //     }
-    // })
-
-    // roles.forEach(function (rol) {
-    //     if (playerRol.toLowerCase() === "mago" && rol.name.toLowerCase() === "mago") {
-    //         damage += rol.rolDamage
-    //         playerHealth -= rol.rolHealth
-    //     }
-    // })
-
-    // roles.forEach(function (rol) {
-    //     if (playerRol.toLowerCase() === "arquero" && rol.name.toLowerCase() === "arquero") {
-    //         damage += rol.rolDamage
-    //         playerEvasion += rol.rolEvasion
-    //     }
+    let padre = document.getElementById("padre");
+    padre.innerHTML = `
+    <div>
+    <p>Ingresa tu nombre</p>
+    <input id="nombre" type="text" placeholder="Nombre"></input> 
+    </div> 
     
+    <div>
+    <p>¿Que raza eliges?(humano, elfo, enano)</p>
+    <input id="raza" type="text" placeholder="Raza"></input> 
+    </div>
+    
+    <div>
+    <p>¿Qué rol eliges? (guerrero,mago,arquero)</p>
+    <input id="roles" type="text" placeholder="Roles"></input> 
+    </div>
+    
+    <button id="btnJugar" > Jugar </button>
+    
+    `
 
+    let LogicaDeCombate = document.getElementById("LogicaDeCombate");
+    LogicaDeCombate.innerHTML = `
+    <div>
+    <p>¿Qué acción tomas? (atacar/defender)</p>
+    </div>
+    
+    <button id="btnAtacar"> atacar </p>
+    <button id="btnDefender"> defender </p>
+    `
 
+    let playerHealth = 100;
+    let enemyHealth = 50;
+    let playerEvasion = 0;
+    let round = 1;
+    let damage = 0;
+    
+    let playerName;
+    let playerRace;
+    let playerRol;
 
-    // bonus de razas
-    if (playerRace.toLowerCase() === "humano") {
-        damage = +5;
-    }
-    else if (playerRace.toLowerCase() === "elfo") {
-        playerEvasion = +2;
+    const btnJugar = document.getElementById("btnJugar")
+    btnJugar.addEventListener('click', function () {
+        playerName = document.getElementById("nombre").value;
+        playerRace = document.getElementById("raza").value;
+        playerRol = document.getElementById("roles").value;
 
-    }
-    else if (playerRace.toLowerCase() === "enano") {
-        playerHealth += 5;
-        playerEvasion = -2;
-    } else {
-        console.log(`raza no valida,no hay bonus`);
-    }
+        // bonus de roles
+        const chosenRol = roles.find((rol) => rol.name === playerRol)
+        console.log(chosenRol)
+        roles.forEach(function () {
+            if(chosenRol) {
+                damage += chosenRol.rolDamage
+                playerHealth += chosenRol.rolHealth
+                if (playerRace.toLowerCase() === "humano") {
+                    damage = +5;
+                }
+                else if (playerRace.toLowerCase() === "elfo") {
+                    playerEvasion = +2;
+    
+                }
+                else if (playerRace.toLowerCase() === "enano") {
+                    playerHealth += 5;
+                    playerEvasion = -2;
+                } else {
+                    console.log(`raza no valida,no hay bonus`);
+                }
+            }else{
+            console.log("rol no valido")
+            }
+            localStorage.setItem("nombre", playerName)
 
-    // generador de enemigos
-
-
-
-
-
-    while (playerHealth > 0 && enemyHealth > 0) {
-        console.log(`Ronda:${round}`)
+        })
+        
+        
+        console.log("Nombre:", playerName);
+        console.log("Raza:", playerRace);
+        console.log("Rol:", playerRol);
+        combate()
+        checkBattleStatus()
+    })
+    
+    function checkBattleStatus() {
+        console.log(`Ronda:${round}`);
         console.log('Estado de la batalla:');
         console.log(`${playerName}: ${playerHealth} de salud`);
         console.log(`Enemigo: ${enemyHealth} de salud`);
-        const playerAction = prompt('¿Qué acción tomas? (atacar/defender)');
+        round++;
+        if (enemyHealth <= 0) {
+            console.log('¡Has derrotado al enemigo! ¡Felicidades!');
+        } else if (playerHealth <= 0) {
+            console.log('¡Has sido derrotado! Fin del juego.');
+        } 
+    }
+    const playerActionAtacar = document.getElementById("btnAtacar")
+    const playerActionDefender = document.getElementById("btnDefender")
+
+    // Logica de la batalla
 
 
-
-        // Lógica de la batalla muy simple
-        if (playerAction.toLowerCase() === 'atacar') {
+    function combate(){
+        playerActionAtacar.addEventListener("click", atacar)
+        function atacar(){
             damage = Math.floor(Math.random() * 20) + 1;
             enemyHealth -= damage;
             const evasionChance = Math.floor(Math.random() * 5) + 1;
-
+            
             // Logica de evasion de ataque
-            if (evasionChance <= playerEvasion)
+            if (evasionChance <= playerEvasion) {
                 console.log(`Has evadido el ataque del enemigo y dañaste ${damage} al enemigo!`)
-
+            }
+            
             // si no logra evadir, recibe daño
             else {
                 const enemyAttack = Math.floor(Math.random() * 10) + 1;
@@ -186,25 +200,19 @@ function startGame() {
                 console.log(`Te inflingieron ${enemyAttack} daño`);
                 console.log(`¡Has infligido ${damage} de daño al enemigo!`);
             }
-
-
-        } else if (playerAction.toLowerCase() === 'defender') {
+            checkBattleStatus();
+        }
+        
+        playerActionDefender.addEventListener("click", defender)
+        function defender(){
             const enemyDamage = Math.floor(Math.random() * 5) + 1;
             playerHealth -= enemyDamage;
             console.log(`Te has defendido, pero el enemigo te ha infligido ${enemyDamage} de daño.`);
-        } else {
-            console.log('Acción no válida. Intenta de nuevo.');
+           
+            checkBattleStatus();
         }
-
         round++;
     }
-
-    if (playerHealth <= 0) {
-        console.log('¡Has sido derrotado! Fin del juego.');
-    } else {
-        console.log('¡Has derrotado al enemigo! ¡Felicidades!');
-    }
-
 }
 
 // Inicia el juego
