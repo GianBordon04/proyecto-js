@@ -31,6 +31,19 @@ body{
     width: 435px;
 }
 
+.razas{
+padding: 5px;
+border: 1px solid white;
+}
+
+.razas ul{
+display: none;
+}
+
+.razas ul:hover{
+display: flex;
+}
+
 .integrantes{
 display: flex;
 flex-direction: row;
